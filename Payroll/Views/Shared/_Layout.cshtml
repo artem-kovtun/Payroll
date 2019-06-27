@@ -1,0 +1,37 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="~/css/style.css" rel="stylesheet">
+
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/index.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <div class="container d-flex flex-column flex-md-row align-items-center" id="header">
+            @Html.ActionLink("Payroll", "Index", "Home" , null, new { @id="logo", @class = "my-0 mr-md-auto font-weight-normal"})
+            <nav class="my-2 my-md-0 mr-md-3" id="header-items">
+                @Html.ActionLink("Історія створення документів", "", "", null, new { @class = "p-2 text-dark" })
+                @Html.ActionLink("Профіль", "Profile", "User", null, new { @class = "p-2 text-dark" })
+                @Html.ActionLink("Послуги", "All", "Service", null, new { @class = "p-2 text-dark" })
+            </nav>
+            <form asp-action="Signout" asp-controller="User" method="post">
+                <input type="submit" class="btn btn-outline-danger" value="Вихід" />
+            </form>
+        </div>
+    </div>
+
+    <div class="container d-flex ">
+        @RenderBody()
+    </div>
+
+</body>
+</html>

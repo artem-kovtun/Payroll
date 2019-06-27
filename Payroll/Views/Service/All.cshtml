@@ -1,0 +1,78 @@
+﻿@model List<Payroll.Models.Views.ServiceViewModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "All";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="d-flex flex-column" id="services-block">
+    <div class="d-flex justify-content-between align-items-center" id="services-block-header">
+        <span>Усі активні послуги</span>
+        <div>
+            <input type="button" class="btn btn-outline-secondary" value="Завершені послуги" />
+            <input type="button" class="btn btn-success" data-toggle="modal" data-target="#service-edit-modal" value="Нова послуга" />
+        </div>
+    </div>
+    <div class="d-flex" id="services-block-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col" style="width:5%">#</th>
+                    <th scope="col" style="width:15%">Назва</th>
+                    <th scope="col" style="width:40%">Опис</th>
+                    <th scope="col" style="width:5%">Час</th>
+                    <th scope="col" style="width:35%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < @Model.Count(); i++)
+                {
+                    <tr>
+                        <th scope="row">@(i+1)</th>
+                        <td>@Model[i].Name</td>
+                        <td>@Model[i].Description</td>
+                        <td>@Model[i].Hours</td>
+                        <td class="d-flex justify-content-between">
+                            <input type="button" name="@Model[i].ServiceId" data-toggle="modal" data-target="#service-edit-modal" class="btn btn-outline-secondary edit-service" value="Редагувати" />
+                            <form asp-action="Finish" asp-controller="Service" asp-route-id="@Model[i].ServiceId" method="post">
+                                <input type="submit" class="btn btn-outline-secondary" value="Завершити" />
+                            </form>
+                            <input type="button" name="@Model[i].ServiceId" data-toggle="modal" data-target="#service-edit-modal" class="btn btn-outline-secondary copy-service" value="Копіювати" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="service-edit-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <form class="modal-content" asp-action="Save" asp-controller="Service">
+            <div class="modal-header">
+                <h5>Послуга</h5>
+            </div>
+            <div class="modal-body d-flex flex-column" id="service-form">
+                <div class="form-group d-flex justify-content-between">
+                    <input name="Name" type="text" class="form-control" id="service-title" placeholder="Назва" required/>
+                    <input name="Hours" type="text" class="form-control" id="service-hours" placeholder="Години" required/>
+                    <input name="ServiceId" type="hidden" id="service-id"/>
+                </div>
+                <div class="form-group">
+                    <textarea name="Description" rows="8" id="service-description" class="form-control" placeholder="Опис послуги" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-outline-secondary" value="Зберегти" />
+                <input type="button" class="btn btn-outline-secondary" data-dismiss="modal" value="Вихід" />
+            </div>
+        </form>
+
+    </div>
+</div>
+<script src="~/js/service.js"></script>
+
+
+

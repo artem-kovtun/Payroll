@@ -1,0 +1,102 @@
+﻿@model Payroll.Models.Views.UserProfileViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    var error = ViewData["ErrorMessage"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form class="container" asp-action="Profile" asp-controller="User" asp-anti-forgery="true" method="post">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="d-flex form-section flex-column">
+                <div class="form-section-header">
+                    <h5>Особисті дані</h5>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Прізвище</span>
+                    <input asp-for="Lastname" type="text" class="form-control" placeholder="...">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Ім'я</span>
+                    <input asp-for="Firstname" type="text" class="form-control" placeholder="...">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>По-батькові</span>
+                    <input asp-for="Middlename" type="text" class="form-control" placeholder="...">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Повне ім'я</span>
+                    <input asp-for="FullnameInAblative" type="text" class="form-control" placeholder="Повне ім'я в орудному відмінку">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>ІПН</span>
+                    <input asp-for="VAT" type="number" class="form-control" placeholder="..." min="1">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Ставка (USD/год)</span>
+                    <input asp-for="USDRate" type="number" class="form-control" placeholder="..." min="0" step="0.01">
+                </div>
+            </div>
+            <div class="d-flex form-section flex-column">
+                <div class="form-section-header">
+                    <h5>Дані ФОП</h5>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Номер договору</span>
+                    <input asp-for="ContractNumber" type="text" class="form-control" placeholder="...">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Дата логовору</span>
+                    <input asp-for="ContractDate" type="date" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="d-flex form-section flex-column">
+                <div class="form-section-header">
+                    <h5>Адресні дані</h5>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Індекс</span>
+                    <input asp-for="AddressIndex" type="text" class="form-control" placeholder="...">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Адрес</span>
+                    <input asp-for="AddressStreet" type="text" class="form-control" placeholder="...">
+                </div>
+            </div>
+            <div class="d-flex form-section flex-column">
+                <div class="form-section-header">
+                    <h5>Дані банку</h5>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Назва банку</span>
+                    <input asp-for="RecipientBank" type="text" class="form-control" placeholder="...">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Номер рахунку</span>
+                    <input asp-for="AccountNumber" type="text" class="form-control" placeholder="...">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>ЄДРПОУ</span>
+                    <input asp-for="RegisterNumber" type="text" class="form-control" placeholder="...">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>МФО</span>
+                    <input asp-for="IBAN" type="text" class="form-control" placeholder="...">
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>Призначення</span>
+                    <textarea asp-for="PaymentPurpose" class="form-control" placeholder="..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 d-flex align-items-center justify-content-between" id="user-profile-footer">
+            <h5>Усі поля обов'язкові</h5>
+            <input type="submit" class="btn btn-success" id="user-profile-submit" value="Зберегти">
+        </div>
+    </div>
+</form>

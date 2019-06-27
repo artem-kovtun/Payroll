@@ -1,0 +1,54 @@
+﻿@model Payroll.Models.Views.DocCreateViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Payroll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var error = ViewData["ErrorMessage"];
+}
+
+
+<form class="d-flex flex-column form-group" id="doc-create-form" asp-action="Index" asp-controller="Home" method="post">
+    <div class="d-flex align-items-center" id="doc-date-pick">
+        <span id="label">Дата виконання роботи: </span>
+        <input asp-for="WorkCompletionDate" type="date" id="doc-date-pick-input" class="form-control">
+        <span id="rate-text">Курс USD - <span id="rate-value">00.00</span> грн</span>
+        <input type="button" class="btn btn-outline-secondary form-control" id="highest-exchange-rate-button" value="Підібрати найкращий курс" />
+    </div>
+    <div class="d-flex align-items-center" id="doc-services-header">
+        <span>Оберіть надані послуги: </span>
+    </div>
+    <div class="d-flex" id="doc-services">
+        <ul class="list-group d-flex" id="doc-services-list">
+            @if(@Model.Services.Count() == 0)
+            {
+                <span id="no-services-text"> Дані відсутні. Створіть їх у розділі 'Послуги'</span>
+            }
+            @for (var i =0; i <  @Model.Services.Count(); i++)
+            {
+            <div class="list-group-item d-flex justify-content-between doc-service-list-item">
+                @Html.HiddenFor(m => Model.Services[i].Name)
+                @Html.HiddenFor(m => Model.Services[i].Description)
+                @Html.HiddenFor(m => Model.Services[i].Hours)
+                @Html.HiddenFor(m => Model.Services[i].IsChecked, new { @class="check" })
+                <span class="service-title">@Model.Services[i].Name: @Model.Services[i].Description</span>
+                <span class="service-hours"><span id="service-hours-value">@Model.Services[i].Hours</span> годин</span>
+            </div>
+            }
+        </ul>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <span id="custom-usd-rate-label">Ставка USD:</span>
+            <input asp-for="CustomUSDRate" type="number" id="custom-usd-rate-input" step="0.01" min="0" class="form-control" />
+        </div>
+        <div>
+            <span id="total-pay">Загальна сума - <span id="total-pay-value">00.00</span> грн.</span>
+            <input type="submit" class="btn btn-success" value="Створити документ" />
+        </div>
+    </div>
+    <div class="d-flex align-items-center flex-row-reverse">
+        <span class="auth-error-block">@error</span>
+    </div>
+</form>

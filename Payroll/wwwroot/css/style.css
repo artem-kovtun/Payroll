@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.input-error {
+    border: 1px solid red !important;
+}
+
+
+input, textarea {
+  outline: none;
+  box-shadow:none !important;
+  border:1px solid #ccc !important;
+}
+
+html,body {
+  height: 100%;
+  width: 100%;
+}
+
+#signup-wrapper {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#signup-login-form {
+  width: 300px;
+}
+
+#signup-login-form h1 {
+  margin-bottom: 50px;
+  font-size: 2em;
+}
+
+#signup-login-form input {
+  padding: 23px 15px;
+  margin: 7px 0;
+  background-color: #f2f2f2
+}
+
+#signup-login-form button {
+  margin-top: 10px;
+  padding: 8px 0;
+}
+
+#or-option-block {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid silver;
+}
+
+#or-option-block a {
+  padding: 8px 0;
+}
+
+.auth-error-block {
+    padding: 25px 0;
+    color: red;
+    font-size: 1.1em;
+    height: 50px;
+}
+
+#header a#logo {
+    font-size: 1.5em;
+    color: black;
+    text-decoration: none;
+}
+
+#header-items a {
+  text-decoration: none;
+  padding: 3px 0px !important;
+  margin: 0px 10px !important;
+}
+
+#header-items a:hover {
+  border-bottom: 1px solid black;
+}
+
+#doc-create-form,#doc-date-header {
+  width: 100%;
+}
+
+#doc-create-form div {
+  margin: px 0;
+}
+
+#doc-date-pick span#label {
+  width: 20%;
+  margin-right: 1%;
+}
+
+#doc-date-pick span#rate-text {
+  width: 19%;
+  margin: 0 1%;
+  padding: 5px 1%;
+  border-right: 1px solid silver;
+}
+
+#doc-date-pick input {
+  width: 30%;
+}
+
+#doc-services-header{
+    margin-top: 35px;
+}
+
+#doc-services {
+    margin: 20px 0; 
+    padding: 5px 0 15px 0;
+    border-bottom: 1px solid silver;
+}
+
+#doc-services-list {
+    width: 100%;
+}
+
+.doc-service-list-item {
+    margin: 1px 0;
+}
+
+.doc-service-list-item .service-title {
+    width: 90%;
+    text-align: justify;
+}
+
+.doc-service-list-item .service-hours {
+    margin-left: 2%;
+    width: 8%;
+}
+
+.doc-service-selected {
+    border: 1px solid #3175e2 !important;
+    color: #3175e2 !important;
+}
+
+.doc-service-list-item:hover {
+    cursor: pointer;
+}
+
+#doc-services-pick input#choose-services {
+    width: 20%;
+    margin-left: 1%;
+}
+
+#custom-usd-rate-label {
+    width: 150px;
+}
+
+#custom-usd-rate-input {
+    margin: 0 2% 0 1%;
+}
+
+#total-pay {
+    margin-right: 10px;
+}
+
+
+
+.form-section div {
+    margin: 10px 0;
+    width: 100%;
+}
+
+.form-section div.form-section-header {
+  padding: 5px 0;
+  border-bottom: 1px solid silver;
+}
+
+.form-section div.form-section-header h5 {
+  size: 1.1em;
+}
+
+.form-section div input, .form-section div textarea {
+  width: 70%;
+  align-self: flex-end;
+}
+
+#user-profile-footer{
+  margin-top: 10px;
+}
+
+#user-profile-footer h5 {
+  font-weight: 600;
+  font-size: 1.1em;
+  color: red;
+}
+
+#services-block {
+    width: 100%;
+}
+
+#services-block-header span{
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+#services-block-body {
+    margin-top: 30px;
+}
+
+#service-form #service-title {
+    width: 74%;
+}
+
+#service-form #service-hours {
+    width: 25%;
+}
+
+#no-services-text {
+    color: silver;
+}
