@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Payroll.Models.ServiceResponses;
 using Payroll.Models.Views;
 using Payroll.Services.Encryption;
 using System;
@@ -19,7 +20,15 @@ namespace Payroll.Services.AutoMapping
 
         public string Convert(string sourceMember, ResolutionContext context)
         {
-            return _aesEnctyption.Encrypt(sourceMember.ToString());
+            var response = _aesEnctyption.Encrypt(sourceMember.ToString());
+            if (response.Status == ServiceResponseStatus.Success)
+            {
+                return response.Data;
+            }
+            else
+            {
+                throw new Exception(); // DataEncrytionException
+            }
         }
     }
 }

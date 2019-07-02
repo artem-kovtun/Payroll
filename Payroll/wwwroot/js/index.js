@@ -19,8 +19,9 @@ window.addEventListener("load", () => {
         var dateInput = $("#doc-date-pick-input");
         dateInput.prop("disabled", true);
         $.getJSON("/usdhighestexchangerate", (data) => {
-            var date = new Date(data.exchangedate);
+            var date = data.exchangedate.split(".").reverse().join("-");;
             dateInput.val(date);
+            dateInput.trigger("change");
             dateInput.prop("disabled", false);
         });
     });
@@ -54,6 +55,7 @@ var updateTotalPay = function () {
     }
 
     var pay = OneUsd * UsdRate * totalHours;
+    debugger;
     $("#total-pay-value")[0].innerHTML = pay.toFixed(2);
 }
 

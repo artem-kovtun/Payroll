@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Payroll.Models;
+using Payroll.Services.ActGeneration;
 using Payroll.Services.Authorization;
 using Payroll.Services.Currency;
 using Payroll.Services.Encryption;
@@ -34,6 +35,7 @@ namespace Payroll
             services.AddTransient<IAuthorizationService,AuthorizationService>();
             services.AddTransient<IAesEncryptionService>(ec => new AesEncryptionService(new KeyInfo("45BLO2yoJkvBwz99kBEMlNkxvL40vUSGaqr/WBu3+Vg=", "Ou3fn+I9SVicGWMLkFEgZQ==")));
             services.AddTransient<ICurrencyHandler, CurrencyHandler>();
+            services.AddTransient<IActGenerator, ActGenerator>();
 
             services.AddDbContext<PayrollDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SQLServerTest"))

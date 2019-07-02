@@ -1,6 +1,6 @@
 {
   "ConnectionStrings": {
     "SQLiteTest": "Filename =./Data/application_test.db",
-    "SQLServerTest": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=payload;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+    "SQLServerTest": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=payroll;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
   }
 }

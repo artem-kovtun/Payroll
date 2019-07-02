@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Payroll.Models.ServiceResponses.Generic;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,58 +17,74 @@ namespace Payroll.Services.Encryption
             _info = info;
         }
 
-        public string Encrypt(string source)
+        public ServiceResponse<string> Encrypt(string source)
         {
-            byte[] encryptedBytes;
-
-            using (var aesAlg = Aes.Create())
+            try
             {
-                aesAlg.Key = _info.Key;
-                aesAlg.IV = _info.Iv;
+                byte[] encryptedBytes;
 
-                var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-                using (var msEncrypt = new MemoryStream())
+                using (var aesAlg = Aes.Create())
                 {
-                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    aesAlg.Key = _info.Key;
+                    aesAlg.IV = _info.Iv;
+
+                    var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+                    using (var msEncrypt = new MemoryStream())
                     {
-                        using (var swEncrypt = new StreamWriter(csEncrypt))
+                        using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                         {
-                            swEncrypt.Write(source);
+                            using (var swEncrypt = new StreamWriter(csEncrypt))
+                            {
+                                swEncrypt.Write(source);
+                            }
+                            encryptedBytes = msEncrypt.ToArray();
                         }
-                        encryptedBytes = msEncrypt.ToArray();
                     }
                 }
-            }
 
-            return Convert.ToBase64String(encryptedBytes);
+                return new SuccessServiceResponse<string>(null,Convert.ToBase64String(encryptedBytes));
+            }
+            catch(Exception e)
+            {
+                return new ErrorServiceResponse<string>(e.Message, null);
+            }
+           
         }
 
-        public string Decrypt(string dectyptedSource)
+        public ServiceResponse<string> Decrypt(string dectyptedSource)
         {
-            var ciptherBytes = Convert.FromBase64String(dectyptedSource);
-
-            string plaintext;
-
-            using (var aesAlg = Aes.Create())
+            try
             {
-                aesAlg.Key = _info.Key;
-                aesAlg.IV = _info.Iv;
+                var ciptherBytes = Convert.FromBase64String(dectyptedSource);
 
-                var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-                using (var msDecrypt = new MemoryStream(ciptherBytes))
+                string plaintext;
+
+                using (var aesAlg = Aes.Create())
                 {
-                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    aesAlg.Key = _info.Key;
+                    aesAlg.IV = _info.Iv;
+
+                    var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+                    using (var msDecrypt = new MemoryStream(ciptherBytes))
                     {
-                        using (var srDecrypt = new StreamReader(csDecrypt))
+                        using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                         {
-                            plaintext = srDecrypt.ReadToEnd();
+                            using (var srDecrypt = new StreamReader(csDecrypt))
+                            {
+                                plaintext = srDecrypt.ReadToEnd();
+                            }
                         }
                     }
+
                 }
 
+                return new SuccessServiceResponse<string>(null,plaintext);
             }
-
-            return plaintext;
+            catch(Exception e)
+            {
+                return new ErrorServiceResponse<string>(e.Message, null);
+            }
+           
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Payroll.Models.Views
         public string Currency { get; set; }
 
         [DataMember(Name ="exchangedate")]
-        public DateTime ExchangeDate { get; set; }
+        public string ExchangeDate { get; set; }
     }
 
 }

@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Payroll.Models;
+using Payroll.Models.ServiceResponses;
 using Payroll.Models.Views;
+using Payroll.Services.ActGeneration;
 using Payroll.Services.Currency;
 
 namespace Payroll.Controllers
@@ -21,12 +19,14 @@ namespace Payroll.Controllers
         private IMapper _mapper { get; set; }
         private PayrollDbContext _db { get; set; }
         private ICurrencyHandler _currencyHandler { get; set; }
+        private IActGenerator _actGenerator { get; set; }
 
-        public HomeController(IMapper mapper, PayrollDbContext database, ICurrencyHandler currencyHandler)
+        public HomeController(IMapper mapper, PayrollDbContext database, ICurrencyHandler currencyHandler, IActGenerator actGenerator)
         {
             _mapper = mapper;
             _db = database;
             _currencyHandler = currencyHandler;
+            _actGenerator = actGenerator;
         }
 
         private User CurrentUser
@@ -40,7 +40,7 @@ namespace Payroll.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var docCreateViewModel = new DocCreateViewModel()
+            var docCreateViewModel = new DocCreateFormViewModel()
             {           
                 CustomUSDRate = _mapper.Map<UserProfileViewModel>(_db.UserProfiles.FirstOrDefault(profile => profile.User == CurrentUser))?.USDRate,
                 WorkCompletionDate = DateTime.Now,
@@ -50,27 +50,42 @@ namespace Payroll.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(DocCreateViewModel model)
+        public IActionResult Index(DocCreateFormViewModel model)
         {
-            var allSelectedServices = model.Services?.Where(service => service.IsChecked == true);
-            if (allSelectedServices == null || allSelectedServices.Count() == 0)
+            var actGenerationViewModel = _mapper.Map<ActGenerationViewModel>(model);
+
+            if (actGenerationViewModel.Services == null || actGenerationViewModel.Services.Count() == 0)
             {
                 ViewData["ErrorMessage"] = "Оберіть щонайменше одну послугу";
+                model.Services = model.Services ?? new List<ServiceViewModel>();
             }
             else
             {
+                var userProfile = _db.UserProfiles.FirstOrDefault(profile => profile.User == CurrentUser);
+                if (userProfile == null)
+                {
+                    ViewData["ErrorMessage"] = "Для створення документу необхідно заповнити профіль";
+                }
+                else
+                {
+                    actGenerationViewModel.Profile = _mapper.Map<UserProfileViewModel>(userProfile);
 
-                return RedirectToAction("Index", "Home");
+                    _actGenerator.Generate(actGenerationViewModel);
+                    return RedirectToAction("Index", "Home");
+                }
             }
-
-            model.Services = new List<ServiceViewModel>();
             return View(model);
         }
 
         [HttpGet("usdhighestexchangerate")]
         public async Task<JsonResult> BestUSDExchangeRate()
         {
-            return Json(await _currencyHandler.GetHighestMonthRate());
+            var response = await _currencyHandler.GetHighestMonthRate();
+            if (response.Status == ServiceResponseStatus.Error)
+            {
+                // LOG ERROR response.Message
+            }
+            return Json(response.Data);
         }
 
     }
