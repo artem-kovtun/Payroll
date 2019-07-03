@@ -8,7 +8,7 @@ namespace Payroll.Models.Views
     public class ActGenerationViewModel
     {
         public UserProfileViewModel Profile { get; set; }
-        public Assigner Assigner { get; set; }
+        public AssignerViewModel Assigner { get; set; }
         public DateTime WorkCompletionDate { get; set; }
         public IEnumerable<Service> Services { get; set; }
         public string CustomUSDRate { get; set; }

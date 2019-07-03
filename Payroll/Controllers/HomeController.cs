@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Payroll.Models;
 using Payroll.Models.ServiceResponses;
 using Payroll.Models.Views;
@@ -41,10 +43,15 @@ namespace Payroll.Controllers
         public IActionResult Index()
         {
             var docCreateViewModel = new DocCreateFormViewModel()
-            {           
+            {
                 CustomUSDRate = _mapper.Map<UserProfileViewModel>(_db.UserProfiles.FirstOrDefault(profile => profile.User == CurrentUser))?.USDRate,
                 WorkCompletionDate = DateTime.Now,
-                Services = _mapper.Map<List<ServiceViewModel>>(_db.Services.Where(service => service.User == CurrentUser && service.IsFinished == false))
+                Services = _mapper.Map<List<ServiceViewModel>>(_db.Services.Where(service => service.User == CurrentUser && service.IsFinished == false)),
+                Assigners = _db.Assigners.Select(assigner => new SelectListItem()
+                {
+                    Value = assigner.AssignerId.ToString(),
+                    Text = $"{assigner.Lastname} {assigner.Firstname[0]}. {assigner.Middlename[0]}."
+                }).ToList()
             };
             return View(docCreateViewModel);
         }
@@ -70,11 +77,36 @@ namespace Payroll.Controllers
                 {
                     actGenerationViewModel.Profile = _mapper.Map<UserProfileViewModel>(userProfile);
 
-                    _actGenerator.Generate(actGenerationViewModel);
-                    return RedirectToAction("Index", "Home");
+                    var filename = _actGenerator.Generate(actGenerationViewModel);
+                    SaveDocumentCreationInfo(actGenerationViewModel);
+
+                    return RedirectToAction("Download", "Home", new { filename = filename });
                 }
             }
+
             return View(model);
+        }
+
+        [HttpGet("download")]
+        public async Task<IActionResult> Download([FromQuery(Name = "filename")]string filename)
+        {
+            if (filename == null)
+            {
+                return Content("filename not present");
+            }
+
+            var filepath = Path.Combine(
+               Directory.GetCurrentDirectory(),
+               "wwwroot\\acts", filename);
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filepath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            System.IO.File.Delete(filepath);
+            return File(memory, GetContentType(filepath), filename);
         }
 
         [HttpGet("usdhighestexchangerate")]
@@ -86,6 +118,54 @@ namespace Payroll.Controllers
                 // LOG ERROR response.Message
             }
             return Json(response.Data);
+        }
+
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats officedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+        }
+
+        private void SaveDocumentCreationInfo(ActGenerationViewModel model)
+        {
+            var document = new Models.Document()
+            {
+                CreationDate = DateTime.Now,
+                WorkCompletionDate = model.WorkCompletionDate,
+                Assigner = _mapper.Map<Assigner>(model.Assigner),
+                Services = new List<DocumentService>(),
+                Creator = CurrentUser
+            };
+            foreach (var service in model.Services)
+            {
+                document.Services.Add(new DocumentService()
+                {
+                    Document = document,
+                    Service = service
+                });
+            }
+
+            _db.Documents.Add(document);
+            _db.SaveChanges();
         }
 
     }

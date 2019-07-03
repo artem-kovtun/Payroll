@@ -149,12 +149,17 @@ html,body {
     margin-left: 1%;
 }
 
+#assigner-label {
+    margin-right: 10px;
+}
+
 #custom-usd-rate-label {
-    width: 150px;
+    width: 120px;
 }
 
 #custom-usd-rate-input {
-    margin: 0 2% 0 1%;
+    margin: 0 1% 0 1%;
+    width: 200px;
 }
 
 #total-pay {

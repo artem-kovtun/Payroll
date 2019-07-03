@@ -1,0 +1,42 @@
+﻿@model List<Payroll.Models.Views.DocumentViewModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "UserHistory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var culture = new CultureInfo("uk-UA");
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">№</th>
+            <th scope="col">Дата створення</th>
+            <th scope="col">Дата робот</th>
+            <th scope="col">Підписант</th>
+            <th scope="col">Послуги</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            <tr>
+                <th scope="row">@(i + 1)</th>
+                <td>@Model[i].CreationDate.ToString("dd MMMM yyyy", culture)</td>
+                <td>@Model[i].WorkCompletionDate.ToString("dd MMMM yyyy", culture)</td>
+                <td>@Model[i].Assigner.Lastname @(Model[i].Assigner.Firstname[0]). @(Model[i].Assigner.Middlename[0]).</td>
+                <td>
+                    <div class="d-flex flex-column">
+                        @for (int j = 0; j < Model[i].Services.Count(); j++)
+                        {
+                            <div><span class="font-weight-bold">@(j + 1):</span> @Model[i].Services[j].Description</div>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

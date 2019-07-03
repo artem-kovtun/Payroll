@@ -22,13 +22,14 @@ namespace Payroll.Services.AutoMapping
         public float Resolve(DocCreateFormViewModel source, ActGenerationViewModel destination, float destMember, ResolutionContext context)
         {
             var response = _currencyHandler.GetUsdExchangeByDate(source.WorkCompletionDate).Result;
-            if (response.Status == ServiceResponseStatus.Success)
+            if (response.Status == ServiceResponseStatus.Success && source.Services != null && source.Services.Count > 0 && source.CustomUSDRate != null)
             {
-                return float.Parse(source.CustomUSDRate, CultureInfo.InvariantCulture) * source.Services.Sum(e => e.Hours) * (float)Math.Round(response.Data.Rate, 2);
+                return float.Parse(source.CustomUSDRate, CultureInfo.InvariantCulture) * source.Services.Sum(e => e.Hours) * (float)Math.Round(response.Data.ExchangeRate, 2);
             }
             else
             {
-                throw new Exception($"Unavailable to get currency rate for {source.WorkCompletionDate.ToString("dd/mm/yyyy")}");
+                return default(float);
+                //throw new Exception($"Unavailable to get currency rate for {source.WorkCompletionDate.ToString("dd/mm/yyyy")}");
             }
             
         }

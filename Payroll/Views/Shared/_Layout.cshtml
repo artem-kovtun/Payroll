@@ -19,7 +19,7 @@
         <div class="container d-flex flex-column flex-md-row align-items-center" id="header">
             @Html.ActionLink("Payroll", "Index", "Home" , null, new { @id="logo", @class = "my-0 mr-md-auto font-weight-normal"})
             <nav class="my-2 my-md-0 mr-md-3" id="header-items">
-                @Html.ActionLink("Історія створення документів", "", "", null, new { @class = "p-2 text-dark" })
+                @Html.ActionLink("Історія створення документів", "history", "document", null, new { @class = "p-2 text-dark" })
                 @Html.ActionLink("Профіль", "Profile", "User", null, new { @class = "p-2 text-dark" })
                 @Html.ActionLink("Послуги", "All", "Service", null, new { @class = "p-2 text-dark" })
             </nav>

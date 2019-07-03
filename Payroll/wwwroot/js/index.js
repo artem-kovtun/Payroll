@@ -19,7 +19,7 @@ window.addEventListener("load", () => {
         var dateInput = $("#doc-date-pick-input");
         dateInput.prop("disabled", true);
         $.getJSON("/usdhighestexchangerate", (data) => {
-            var date = data.exchangedate.split(".").reverse().join("-");;
+            var date = data.exchangedate.substring(0,10).split(".").reverse().join("-");;
             dateInput.val(date);
             dateInput.trigger("change");
             dateInput.prop("disabled", false);

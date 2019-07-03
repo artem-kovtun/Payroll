@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Payroll.Models
+namespace Payroll.Models.Views
 {
-    public class Document
+    public class DocumentViewModel
     {
         public int DocumentId { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime WorkCompletionDate { get; set; }
-        public User Creator { get; set; }
-        public Assigner Assigner { get; set; }
+        public AssignerViewModel Assigner { get; set; }
 
-        public virtual ICollection<DocumentService> Services { get; set; }
+        public List<ServiceViewModel> Services { get; set; }
     }
 }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using AutoMapper;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Payroll.Models;
 using Payroll.Models.Views;
 using Payroll.Services.Currency;
 using static Payroll.Services.ActGeneration.MoneyToStr;
@@ -17,6 +18,7 @@ namespace Payroll.Services.ActGeneration
     {
         private MoneyToStr _moneyToStr = new MoneyToStr("UAH", "UKR", string.Empty);
         private Money money; 
+        private static CultureInfo culture = new CultureInfo("uk-UA");
         private ICurrencyHandler _currencyHandler { get; set; }
         private float UsdExchangeRate { get; set; }
 
@@ -29,7 +31,7 @@ namespace Payroll.Services.ActGeneration
         {
             string filepath;
             money = _moneyToStr.ConvertValueExtended(model.TotalPay);
-            UsdExchangeRate = (float)Math.Round(_currencyHandler.GetUsdExchangeByDate(model.WorkCompletionDate).Result.Data.Rate,2);
+            UsdExchangeRate = (float)Math.Round(_currencyHandler.GetUsdExchangeByDate(model.WorkCompletionDate).Result.Data.ExchangeRate,2);
 
             using (MemoryStream mem = new MemoryStream())
             {
@@ -37,7 +39,7 @@ namespace Payroll.Services.ActGeneration
                 {
                     MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
 
-                    mainPart.Document = new Document();
+                    mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
                     Body body = new Body();
 
                     SectionProperties sectionProps = new SectionProperties();
@@ -55,20 +57,23 @@ namespace Payroll.Services.ActGeneration
 
                 mem.Seek(0, SeekOrigin.Begin);
 
-                filepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\acts", $"{model.WorkCompletionDate.ToString("MM/dd/yyyy")} - {model.Profile.Lastname} {model.Profile.Firstname}.docx");
+                
+                filepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\acts", $"{DateTime.Now.ToString("MM/dd/yyyy HH/mm")} - {model.Profile.Lastname} {model.Profile.Firstname}.docx");
                 using (FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write))
                 {
                     mem.CopyTo(file);
                 }
             }
 
-            return filepath;
+            return Path.GetFileName(filepath);
         }
+
+        #region Document Generation Parts 
 
         private void BillDocument(Body body, ActGenerationViewModel model)
         {
             body.Append(AddParagraph(new Run[] { AddText($"РАХУНОК-ФАКТУРА №1", BoldTextDefault(28)) }));
-            body.Append(AddParagraph(new Run[] { AddText($"Від 10 червня 2019 р.", TextDefault()) }));
+            body.Append(AddParagraph(new Run[] { AddText($"Від {model.WorkCompletionDate.ToString("dd MMMM yyyy", culture)} р.", TextDefault()) }));
             body.Append(AddParagraph(new Run[] { AddText($"", TextDefault()) }));
             body.Append(AddParagraph(new Run[] {
                         AddText($"Постачальник: ", BoldTextDefault()),
@@ -137,7 +142,7 @@ namespace Payroll.Services.ActGeneration
             }));
             body.Append(AddParagraph(new Run[] { AddText($"", TextDefault()) }));
             body.Append(AddParagraph(new Run[] { AddText($"", TextDefault()) }));
-            body.Append(AddParagraph(new Run[] { AddText($"ФОП {model.Profile.Lastname} {model.Profile.Firstname} {model.Profile.Middlename}(_____________________________)", TextDefault()) }));
+            body.Append(AddParagraph(new Run[] { AddText($"ФОП {model.Profile.Lastname} {model.Profile.Firstname} {model.Profile.Middlename} (_____________________________)", TextDefault()) }));
 
         }
 
@@ -146,11 +151,11 @@ namespace Payroll.Services.ActGeneration
             body.Append(new Paragraph(new Run(new Break() { Type = BreakValues.Page })));
 
             body.Append(AddParagraph(new Run[] { AddText($"АКТ №1", BoldTextDefault(28)) }, justify: JustificationValues.Center));
-            body.Append(AddParagraph(new Run[] { AddText($"приймання-передачі послуг за Договором № {model.Profile.ContractNumber} від {Convert.ToDateTime(model.Profile.ContractDate).ToString("dd MMMM yyyy")} року", BoldTextDefault()) }));
+            body.Append(AddParagraph(new Run[] { AddText($"приймання-передачі послуг за Договором № {model.Profile.ContractNumber} від {Convert.ToDateTime(model.Profile.ContractDate).ToString("dd MMMM yyyy", culture)} року", BoldTextDefault()) }));
             body.Append(AddParagraph(new Run[] { AddText($"", TextDefault()) }));
-            body.Append(AddParagraph(new Run[] { AddText($"Даний акт складений у м.Київ {Convert.ToDateTime(model.WorkCompletionDate).ToString("dd MMMM yyyy")} року.", TextDefault()) }));
+            body.Append(AddParagraph(new Run[] { AddText($"Даний акт складений у м.Київ {Convert.ToDateTime(model.WorkCompletionDate).ToString("dd MMMM yyyy", culture)} року.", TextDefault()) }));
             body.Append(AddParagraph(new Run[] { AddText($"", TextDefault()) }));
-            body.Append(AddParagraph(new Run[] { AddText($"Повноважним представником ТОВ «Делойт і Туш», що є юридичною особою відповідно до законодавства України, надалі: «Замовник», в особі ... ..., ..., та фізичною особою-підприємцем, {model.Profile.FullnameInAblative}, що є громадянином України, надалі «Виконавець», про те, що Виконавець фактично надав послуги, а Замовник прийняв послуги, перелік і вартість яких зазначені нижче.", TextDefault()) }));
+            body.Append(AddParagraph(new Run[] { AddText($"Повноважним представником ТОВ «Делойт і Туш», що є юридичною особою відповідно до законодавства України, надалі: «Замовник», в особі {model.Assigner.PositionInAblative} {model.Assigner.FullnameInAblative}, {model.Assigner.OperateBasis}, та фізичною особою-підприємцем, {model.Profile.FullnameInAblative}, що є громадянином України, надалі «Виконавець», про те, що Виконавець фактично надав послуги, а Замовник прийняв послуги, перелік і вартість яких зазначені нижче.", TextDefault()) }));
             body.Append(AddParagraph(new Run[] { AddText($"", TextDefault()) }));
 
 
@@ -192,8 +197,8 @@ namespace Payroll.Services.ActGeneration
             body.Append(AddTable(new List<TableRow> {
                         SubscribersHeader(),
                         EmptyRow(2),
-                        SubscribersPosition("Директор"),
-                        SubscribersFullname("Вахт В.В.","Ковтун А.О.")
+                        SubscribersPosition($"{model.Assigner.Position}"),
+                        SubscribersFullname($"{model.Assigner.Lastname} {model.Assigner.Firstname[0]}. {model.Assigner.Middlename[0]}.",$"{model.Profile.Lastname} {model.Profile.Firstname[0]}. {model.Profile.Middlename[0]}.")
                     }, false));
 
         }
@@ -367,5 +372,7 @@ namespace Payroll.Services.ActGeneration
 
             table.Append(properties);
         }
+
+        #endregion
     }
 }

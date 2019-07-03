@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Payroll.Models;
 
 namespace Payroll.Migrations
 {
     [DbContext(typeof(PayrollDbContext))]
-    partial class PayrollDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190702104250_added usdexchangerates")]
+    partial class addedusdexchangerates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,17 +52,11 @@ namespace Payroll.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AssignerId");
-
                     b.Property<DateTime>("CreationDate");
 
                     b.Property<string>("CreatorUsername");
 
-                    b.Property<DateTime>("WorkCompletionDate");
-
                     b.HasKey("DocumentId");
-
-                    b.HasIndex("AssignerId");
 
                     b.HasIndex("CreatorUsername");
 
@@ -170,10 +166,6 @@ namespace Payroll.Migrations
 
             modelBuilder.Entity("Payroll.Models.Document", b =>
                 {
-                    b.HasOne("Payroll.Models.Assigner", "Assigner")
-                        .WithMany()
-                        .HasForeignKey("AssignerId");
-
                     b.HasOne("Payroll.Models.User", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorUsername");

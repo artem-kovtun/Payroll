@@ -12,7 +12,8 @@ namespace Payroll.Services.AutoMapping
         public ActGenerationProfile()
         {
             CreateMap<DocCreateFormViewModel, ActGenerationViewModel>().ForMember(dest => dest.Services, options => options.MapFrom(source => source.Services.Where(service => service.IsChecked)))
-                                                                       .ForMember(dest => dest.TotalPay, options => options.MapFrom<TotalPayValueResolver>());
+                                                                       .ForMember(dest => dest.TotalPay, options => options.MapFrom<TotalPayValueResolver>())
+                                                                       .ForMember(dest => dest.Assigner, options => options.MapFrom<AssignerValueResolver>());
         }
     }
 }
